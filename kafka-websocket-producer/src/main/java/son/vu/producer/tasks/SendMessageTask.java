@@ -7,16 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import son.vu.producer.config.AppConfig;
 import son.vu.producer.domain.MessageContent;
 import son.vu.producer.service.MessageService;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -24,27 +25,64 @@ public class SendMessageTask {
     private final MessageService messageOrderService;
 
     @Autowired
+    AppConfig appConfig;
+
+    private final String TEMP_FILE = System.getProperty("user.home") + "/websocket.temp";
+
+    @Autowired
     public SendMessageTask(MessageService messageOrderService) {
         this.messageOrderService = messageOrderService;
     }
 
+
+    public String getFileName() throws IOException, ParseException {
+        Path path = Paths.get(TEMP_FILE);
+        int month = 10;
+        if (Files.exists(path)) {
+            FileInputStream fstream = new FileInputStream(TEMP_FILE);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+            String strLine;
+
+            while ((strLine = br.readLine()) != null)   {
+                month = Integer.parseInt(strLine) + 1;
+            }
+            fstream.close();
+            if(month == 13) {
+                month = 10;
+            }
+            Files.delete(path);
+        }
+        FileWriter myWriter = new FileWriter(TEMP_FILE);
+        myWriter.write(month + "");
+        myWriter.close();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy");
+        String dateInString = "01-" + month + "-2022";
+        Date date = sdf.parse(dateInString);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        String value = "Sales_" + "2022" + month + "01_" + "2022" + month + lastDay + ".psv";
+        return value;
+    }
+
     public List<List<String>> readCSV() {
 
-        List<List<String>> records = new ArrayList<List<String>>();
-        try (CSVReader csvReader = new CSVReader(new FileReader("/Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev-kafka/producer/data/Sales_20221001_20221031.psv"));) {
-            String[] values = null;
-            while ((values = csvReader.readNext()) != null) {
-                records.add(Arrays.asList(values));
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException | CsvValidationException e) {
-            throw new RuntimeException(e);
-        }
+        List<List<String>> records = null;
+        try {
+            String fileName = getFileName();
+            log.info(fileName);
+            records = new ArrayList<List<String>>();
+            try (CSVReader csvReader = new CSVReader(new FileReader(appConfig.dataFile + "/" + fileName));) {
+                String[] values = null;
+                while ((values = csvReader.readNext()) != null) {
+                    records.add(Arrays.asList(values));
+                }
+            } catch (Exception e) {
 
-//        for(List<String> item : records) {
-//            System.out.println(item);
-//        }
+            }
+        } catch (Exception e) {
+        }
         return records;
     }
 
@@ -57,43 +95,21 @@ public class SendMessageTask {
         long timeElapsed = finish - start;
         log.info("Time Elapsed: {}" , timeElapsed);
 
-//        int leftLimit = 97; // letter 'a'
-//        int rightLimit = 122; // letter 'z'
-//        int targetStringLength = 10;
-//        Random random = new Random();
-//        StringBuilder buffer = new StringBuilder(targetStringLength);
-//        for (int i = 0; i < targetStringLength; i++) {
-//            int randomLimitedInt = leftLimit + (int)
-//                    (random.nextFloat() * (rightLimit - leftLimit + 1));
-//            buffer.append((char) randomLimitedInt);
-//        }
-//        String generatedString = buffer.toString();
-//
-//        MessageContent messageContent =  new MessageContent();
-//        messageContent.setItem(generatedString);
-//        int min = 200;
-//        int max = 400;
-//        int b = (int)(Math.random()*(max-min+1)+min);
-//        messageContent.setAmount(Double.valueOf(b));
-
         MessageContent messageContent =  new MessageContent();
 
         String temp = "";
         for(List<String> list : records) {
-            int index = 0;
             for(String item: list) {
-                temp += item;
-
+                if(temp.equals("")) {
+                    temp = item;
+                } else {
+                    temp += item;
+                }
             }
-            index++;
-            if(index == 2) break;
-
             temp += "\n";
         }
-        messageContent.setAmount(Double.valueOf(2.0));
+        messageContent.setAmount(Double.valueOf(1.0));
         messageContent.setItem(temp);
-
-        log.info("create food order request received");
         messageOrderService.createMessageOrder(messageContent);
     }
 }

@@ -21,7 +21,7 @@ public class AppConfig {
     private final KafkaProperties kafkaProperties;
 
     @Value("${app.data-file}")
-    private String keytabLocation;
+    public String dataFile;
 
 
     @Autowired

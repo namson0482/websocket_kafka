@@ -25,8 +25,11 @@ export class MessageService {
         if (message.body) {
           const value: string =  message.body;
           const array = value.split('@');
-          that.msg.pop();
-          that.msg.push(array);
+          that.msg = [];
+          for (let i = 0; i < array.length; i++) {
+            that.msg.push(array[i]);
+            console.log(array[i]);
+          }
         }
       });
     });

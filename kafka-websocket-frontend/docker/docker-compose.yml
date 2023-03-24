@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   websocket:
-    image: "websocket-frontend-image"
+    image: "namson0482/websocket-frontend:1.0"
     container_name: "websocket-frontend-container"
     ports:
       - "7070:80"

@@ -17,8 +17,7 @@ public class WebSocketController {
     }
 
     @MessageMapping("/send/message")
-    public void sendMessage(String message){
-        System.out.println(message);
+    public void sendMessage(String message) {
         this.template.convertAndSend("/message",  message);
     }
 

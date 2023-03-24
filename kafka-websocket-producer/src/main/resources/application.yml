@@ -5,4 +5,4 @@ topic:
   name: t.food.order
 
 app:
-  data-file: file:/Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev/producer/data
+  data-file: /Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev-kafka/producer/data

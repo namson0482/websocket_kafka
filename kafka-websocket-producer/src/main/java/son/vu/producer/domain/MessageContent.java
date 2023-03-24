@@ -2,6 +2,8 @@ package son.vu.producer.domain;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 public class MessageContent {
 
