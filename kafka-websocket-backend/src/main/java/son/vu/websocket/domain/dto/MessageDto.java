@@ -1,4 +1,4 @@
-package com.hasee.websocket.domain.dto;
+package son.vu.websocket.domain.dto;
 
 import lombok.Data;
 import lombok.Value;

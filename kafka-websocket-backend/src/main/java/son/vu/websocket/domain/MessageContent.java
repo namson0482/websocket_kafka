@@ -1,4 +1,4 @@
-package com.hasee.websocket.domain;
+package son.vu.websocket.domain;
 
 import lombok.Data;
 

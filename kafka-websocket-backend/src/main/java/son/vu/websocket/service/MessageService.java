@@ -1,7 +1,7 @@
-package com.hasee.websocket.service;
+package son.vu.websocket.service;
 
-import com.hasee.websocket.domain.Message;
-import com.hasee.websocket.repository.MessageRepository;
+import son.vu.websocket.domain.Message;
+import son.vu.websocket.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.hasee.websocket.model;
+package son.vu.websocket.model;
 
 public class Passport
 {

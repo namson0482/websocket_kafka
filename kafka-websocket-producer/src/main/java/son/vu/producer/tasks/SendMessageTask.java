@@ -21,14 +21,15 @@ import java.util.Random;
 @Component
 @Slf4j
 public class SendMessageTask {
-    private final MessageService foodOrderService;
+    private final MessageService messageOrderService;
 
     @Autowired
-    public SendMessageTask(MessageService foodOrderService) {
-        this.foodOrderService = foodOrderService;
+    public SendMessageTask(MessageService messageOrderService) {
+        this.messageOrderService = messageOrderService;
     }
 
-    public void readCSV() {
+    public List<List<String>> readCSV() {
+
         List<List<String>> records = new ArrayList<List<String>>();
         try (CSVReader csvReader = new CSVReader(new FileReader("/Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev-kafka/producer/data/Sales_20221001_20221031.psv"));) {
             String[] values = null;
@@ -41,39 +42,58 @@ public class SendMessageTask {
             throw new RuntimeException(e);
         }
 
-        for(List<String> item : records) {
-            System.out.println(item);
-        }
+//        for(List<String> item : records) {
+//            System.out.println(item);
+//        }
+        return records;
     }
 
     // run every 3 sec
     @Scheduled(fixedRateString = "10000")
     public void send() throws JsonProcessingException {
-//        long start = System.currentTimeMillis();
-//        readCSV();
-//        long finish = System.currentTimeMillis();
-//        long timeElapsed = finish - start;
-//        System.out.println("Time Elapsed: " + timeElapsed);
+        long start = System.currentTimeMillis();
+        List<List<String>> records = readCSV();
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        log.info("Time Elapsed: {}" , timeElapsed);
 
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(targetStringLength);
-        for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = leftLimit + (int)
-                    (random.nextFloat() * (rightLimit - leftLimit + 1));
-            buffer.append((char) randomLimitedInt);
-        }
-        String generatedString = buffer.toString();
+//        int leftLimit = 97; // letter 'a'
+//        int rightLimit = 122; // letter 'z'
+//        int targetStringLength = 10;
+//        Random random = new Random();
+//        StringBuilder buffer = new StringBuilder(targetStringLength);
+//        for (int i = 0; i < targetStringLength; i++) {
+//            int randomLimitedInt = leftLimit + (int)
+//                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+//            buffer.append((char) randomLimitedInt);
+//        }
+//        String generatedString = buffer.toString();
+//
+//        MessageContent messageContent =  new MessageContent();
+//        messageContent.setItem(generatedString);
+//        int min = 200;
+//        int max = 400;
+//        int b = (int)(Math.random()*(max-min+1)+min);
+//        messageContent.setAmount(Double.valueOf(b));
 
         MessageContent messageContent =  new MessageContent();
-        messageContent.setItem(generatedString);
-        int min = 200;
-        int max = 400;
-        int b = (int)(Math.random()*(max-min+1)+min);
-        messageContent.setAmount(Double.valueOf(b));
+
+        String temp = "";
+        for(List<String> list : records) {
+            int index = 0;
+            for(String item: list) {
+                temp += item;
+
+            }
+            index++;
+            if(index == 2) break;
+
+            temp += "\n";
+        }
+        messageContent.setAmount(Double.valueOf(2.0));
+        messageContent.setItem(temp);
+
         log.info("create food order request received");
-        foodOrderService.createMessageOrder(messageContent);
+        messageOrderService.createMessageOrder(messageContent);
     }
 }

@@ -1,7 +1,7 @@
-package com.hasee.websocket.controller;
+package son.vu.websocket.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.hasee.websocket.domain.MessageContent;
+import son.vu.websocket.domain.MessageContent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

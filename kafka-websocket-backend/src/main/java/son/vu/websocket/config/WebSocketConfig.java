@@ -1,4 +1,4 @@
-package com.hasee.websocket.config;
+package son.vu.websocket.config;
 
 //import org.springframework.context.annotation.Configuration;
 //import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -57,21 +57,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         return new ModelMapper();
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8082", "https://localhost:8082"));
-        configuration.setAllowedMethods(Collections.singletonList("*"));
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("http://keycloak:8082", "https://localhost:8082"));
+//        configuration.setAllowedMethods(Collections.singletonList("*"));
+//        configuration.setAllowedHeaders(Collections.singletonList("*"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/socket")
-                .setAllowedOrigins("http://localhost:4200")
+                .setAllowedOrigins("http://localhost:4200", "http://keycloak:4200"
+                        , "http://localhost:7070", "http://keycloak:7070")
                 .withSockJS();
     }
 

@@ -1,6 +1,6 @@
-package com.hasee.websocket.repository;
+package son.vu.websocket.repository;
 
-import com.hasee.websocket.domain.Message;
+import son.vu.websocket.domain.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

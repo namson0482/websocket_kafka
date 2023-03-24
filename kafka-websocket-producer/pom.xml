@@ -9,14 +9,12 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.github.pedroluiznogueira</groupId>
-	<artifactId>producer</artifactId>
+	<artifactId>kafka-websocket-producer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>producer</name>
-	<description>Producer microservice</description>
+	<name>kafka-websocket-producer</name>
+	<description>Kafka Websocket Producer</description>
 	<properties>
 		<java.version>11</java.version>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>

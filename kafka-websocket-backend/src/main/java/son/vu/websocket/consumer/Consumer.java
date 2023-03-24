@@ -1,11 +1,11 @@
-package com.hasee.websocket.consumer;
+package son.vu.websocket.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hasee.websocket.controller.WebSocketController;
-import com.hasee.websocket.domain.Message;
-import com.hasee.websocket.domain.dto.MessageDto;
-import com.hasee.websocket.service.MessageService;
+import son.vu.websocket.controller.WebSocketController;
+import son.vu.websocket.domain.Message;
+import son.vu.websocket.domain.dto.MessageDto;
+import son.vu.websocket.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
