@@ -10,9 +10,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.hasee</groupId>
-	<artifactId>kafka-websocket-backend</artifactId>
+	<artifactId>kafka-websocket-consumer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>kafka-websocket-backend</name>
+	<name>kafka-websocket-consumer</name>
 	<description>Kafka WebSocket Backend project for Spring Boot Web Socket</description>
 
 	<properties>
