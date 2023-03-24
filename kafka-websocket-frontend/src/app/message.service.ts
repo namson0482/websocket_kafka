@@ -19,16 +19,16 @@ export class MessageService {
     const ws = new SockJS(serverUrl);
     this.stompClient = Stomp.over(ws);
     const that = this;
-    // tslint:disable-next-line:only-arrow-functions
     this.stompClient.connect({}, function(frame) {
       that.stompClient.subscribe('/message', (message) => {
         if (message.body) {
           const value: string =  message.body;
-          const array = value.split('@');
+          const arrayTempOne = value.split('@');
           that.msg = [];
-          for (let i = 0; i < array.length; i++) {
-            that.msg.push(array[i]);
-            console.log(array[i]);
+          for (let i = 0; i < arrayTempOne.length; i++) {
+            const arrayTempTwo = arrayTempOne[i].split('$');
+            console.log(arrayTempTwo);
+            that.msg.push(arrayTempTwo);
           }
         }
       });

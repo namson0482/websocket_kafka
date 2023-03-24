@@ -66,7 +66,7 @@ public class Consumer {
         for (Map.Entry<String, Product> entry : map.entrySet()) {
             String key = entry.getKey();
             Product product = entry.getValue();
-            String line = key + "         " + product.getQuantity() + "         " + product.getMoney().toString();
+            String line = key + "$" + product.getQuantity() + "$" + product.getMoney().toString();
             if(result.equals("")) {
                 result += line;
             } else {

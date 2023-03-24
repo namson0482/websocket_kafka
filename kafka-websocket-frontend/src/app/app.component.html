@@ -1,22 +1,39 @@
+<style>
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+</style>
+
 <div class="toolbar" role="banner">
   <img  width="40"  alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg=="/>
   <span>Spring Angular Web Socket</span>
 </div>
 
 <div class="content" role="main">
-  <input class="form-control" type="text" placeholder="message" [(ngModel)]="input">
+  <input class="form-control" type="text" placeholder="message" [(ngModel)]="input" type="hidden">
   <br/>
-  <button class="btn btn-success" (click)="sendMessage()">Send</button>
+  <button class="btn btn-success" (click)="sendMessage()" hidden>Send</button>
+
+  <div><h1>Sale Report</h1></div>
   <div class="content">
       <table>
+        <thead>
         <tr>
-          <td>Product Name</td>
-          <td>Product Quantity</td>
-          <td>Total Sale</td>
+          <th>Product Name</th>
+          <th>Product Quantity</th>
+          <th>Total Sale</th>
         </tr>
-        <tr *ngFor="let msg of messageService.msg">
-          <td> {{msg}}</td>
-        </tr>
+        </thead>
+        <tbody>
+
+          <tr *ngFor="let row of messageService.msg">
+            <td *ngFor="let item of row">{{item}}</td>
+          </tr>
+
+
+
+        </tbody>
       </table>
   </div>
 </div>
