@@ -1,0 +1,8 @@
+server:
+  port: 8080
+
+topic:
+  name: t.food.order
+
+app:
+  data-file: file:/Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev/producer/data
