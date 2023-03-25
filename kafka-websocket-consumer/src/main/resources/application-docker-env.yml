@@ -8,6 +8,6 @@ spring:
             value-serializer: org.apache.kafka.common.serialization.StringSerializer
             group-id: "group_id"
 topic:
-    name: t.food.order
+    name: t.message.order
 app:
     data-file: ${DATA_FILE:-/temp/}

@@ -9,7 +9,7 @@ spring:
       group-id: "group_id"
 
 topic:
-  name: t.food.order
+  name: t.message.order
 
 app:
   data-file: /Users/macbook/Documents/Docs/Tasks/stored

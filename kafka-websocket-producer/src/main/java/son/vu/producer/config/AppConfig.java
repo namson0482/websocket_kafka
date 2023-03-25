@@ -44,7 +44,7 @@ public class AppConfig {
     @Bean
     public NewTopic topic() {
         return TopicBuilder
-                .name("t.food.order")
+                .name("t.message.order")
                 .partitions(1)
                 .replicas(1)
                 .build();

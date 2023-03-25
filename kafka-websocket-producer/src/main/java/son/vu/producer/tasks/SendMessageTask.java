@@ -87,7 +87,7 @@ public class SendMessageTask {
     }
 
     // run every 3 sec
-    @Scheduled(fixedRateString = "60000")
+    @Scheduled(fixedRateString = "${app.interval-time:60000}")
     public void send() throws JsonProcessingException {
         long start = System.currentTimeMillis();
         List<List<String>> records = readCSV();

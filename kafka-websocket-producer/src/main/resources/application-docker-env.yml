@@ -2,9 +2,10 @@ server:
   port: 8080
 
 topic:
-  name: t.food.order
+  name: t.message.order
 
 app:
+  interval-time: ${INTERVAL_TIME:-60000}
   data-file: ${DATA_FILE:-/temp/}
 
 spring:

@@ -2,9 +2,10 @@ server:
   port: 8080
 
 topic:
-  name: t.food.order
+  name: t.message.order
 
 app:
+  interval-time: 60000
   data-file: /Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev-kafka/producer/data
 
 spring:
