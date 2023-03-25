@@ -5,13 +5,13 @@ topic:
   name: t.message.order
 
 app:
-  interval-time: 60000
+  interval-time: 10000
   data-file: /Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev-kafka/producer/data
 
 spring:
   kafka:
     producer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: kafka:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       group-id: "group_id"
