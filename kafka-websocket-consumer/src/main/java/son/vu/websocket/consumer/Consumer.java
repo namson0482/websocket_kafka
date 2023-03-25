@@ -81,22 +81,18 @@ public class Consumer {
 
     @KafkaListener(topics = orderTopic)
     public void consumeMessage(String message) throws JsonProcessingException {
-//        log.info("message consumed {}", message);
 
         MessageDto messageDto = objectMapper.readValue(message, MessageDto.class);
         Message messageConvert = modelMapper.map(messageDto, Message.class);
-
-
         String value = messageConvert.getItem() + "%" + messageConvert.getAmount();
 
         String []arrayValues = messageConvert.getItem().split("\n");
         log.info("Total items: {}", arrayValues.length );
 
         String result = proceedMessage(arrayValues);
-        log.info(result);
 
         webSocketController.sendMessage(result);
-//        messageService.persistFoodOrder(messageConvert);
+        messageService.persistMessage(arrayValues);
     }
 
 }

@@ -8,3 +8,4 @@ services:
         - "8082:8082" #<Computer_port>:<Container_port>
       environment:
         SPRING_PROFILES_ACTIVE: "docker-env"
+        DATA_FILE: "/temp/"

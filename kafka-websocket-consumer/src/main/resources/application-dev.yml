@@ -1,16 +1,15 @@
 server:
-  port: 8080
+  port: 8082
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      group-id: "group_id"
 
 topic:
   name: t.food.order
 
 app:
-  data-file: /Users/macbook/Documents/Docs/pro_intellij/apache_kafka/deman-planing-dev-kafka/producer/data
-
-spring:
-  kafka:
-    producer:
-      bootstrap-servers: localhost:9092
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      group-id: "group_id"
+  data-file: /Users/macbook/Documents/Docs/Tasks/stored

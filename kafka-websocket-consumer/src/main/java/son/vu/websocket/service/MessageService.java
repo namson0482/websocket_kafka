@@ -1,25 +1,42 @@
 package son.vu.websocket.service;
 
-import son.vu.websocket.domain.Message;
-import son.vu.websocket.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Date;
 
 @Slf4j
 @Service
 public class MessageService {
 
-    private final MessageRepository messageRepository;
 
-    @Autowired
-    public MessageService(MessageRepository messageRepository) {
-        this.messageRepository = messageRepository;
-    }
+    @Value("${app.data-file}")
+    public String dataFilePath;
 
-    public void persistFoodOrder(Message message) {
-        Message persistedMessage = messageRepository.save(message);
-        log.info("food order persisted {}", persistedMessage);
+    private static final String HEADER_FILE = "\"SalesDate\"|\"StoreName\"|\"ProductName\"|\"SalesUnits\"|\"SalesRevenue\"";
+
+    public void persistMessage(String []arrayValues) {
+
+
+        Date date = new Date();
+        long timeMilli = date.getTime();
+        String fileName = dataFilePath + "/" + "Sales_" + timeMilli;
+
+        try (PrintWriter writer = new PrintWriter(fileName)) {
+            writer.write(HEADER_FILE + "\n");
+            for(String item: arrayValues) {
+                writer.write(item + "\n");
+            }
+            writer.close();
+            System.out.println("Write file done!");
+        } catch (FileNotFoundException e) {
+            log.error(e.getMessage());
+        }
+
     }
 
 }
