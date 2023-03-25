@@ -10,7 +10,7 @@ networks:
 
 services:
   zookeeper:
-    image: zookeeper:3.7.0
+    image: confluentinc/cp-zookeeper:7.2.1
     container_name: zookeeper
     hostname: kafka
     restart: "no"
@@ -19,9 +19,12 @@ services:
         ipv4_address: 10.5.0.2
     ports:
       - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: obsidiandynamics/kafka
+    image: confluentinc/cp-kafka:7.2.1
     container_name: kafka
     hostname: kafka
     restart: "no"
@@ -30,20 +33,66 @@ services:
         ipv4_address: 10.5.0.3
     ports:
       - "9092:9092"
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
       KAFKA_LISTENERS: DOCKER_INTERNAL://:29092,DOCKER_EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://${DOCKER_HOST_IP:-10.5.0.3}:9092
+      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.2.1
+    hostname: schema-registry
+    container_name: schema-registry
     depends_on:
       - zookeeper
+      - kafka
+    ports:
+      - "8081:8081"
+    networks:
+      kafka-net:
+        ipv4_address: 10.5.0.8
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:29092'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:7.2.1
+    hostname: control-center
+    container_name: control-center
+    depends_on:
+      - kafka
+      - schema-registry
+    ports:
+      - "9021:9021"
+    networks:
+      kafka-net:
+        ipv4_address: 10.5.0.9
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'kafka:29092'
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      PORT: 9021
 
   websocket_producer:
     image: "namson0482/kafka-websocket-producer:1.0"
     container_name: "kafka-websocket-producer-container"
+    hostname: websocket_producer
     ports:
       - "8080:8080" #<Computer_port>:<Container_port>
     networks:
@@ -54,41 +103,43 @@ services:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
       DATA_FILE: "/temp/"
+      INTERVAL_TIME: "10000"
+      WAIT_HOSTS: kafka:29092
     depends_on:
       - "kafka"
 
   websocket_consumer:
-      image: "namson0482/kafka-websocket-consumer:1.0"
-      container_name: "kafka-websocket-consumer-container"
-      ports:
-        - "8082:8082" #<Computer_port>:<Container_port>
-# Uncomment code below if you want to mount local directory to container directory
-#      volumes:
-#        - type: bind
-#          source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
-#          target: /temp/
-      networks:
-        kafka-net:
-          ipv4_address: 10.5.0.5
-      restart: on-failure
-      environment:
-        SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
-        SPRING_PROFILES_ACTIVE: "docker-env"
-        DATA_FILE: "/temp/"
-      depends_on:
-        - "kafka"
-        - "websocket_producer"
+    image: "namson0482/kafka-websocket-consumer:1.0"
+    container_name: "kafka-websocket-consumer-container"
+    hostname: websocket_consumer
+    ports:
+      - "8082:8082" #<Computer_port>:<Container_port>
+    # Uncomment code below if you want to mount local directory to container directory
+    #      volumes:
+    #        - type: bind
+    #          source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
+    #          target: /temp/
+    networks:
+      kafka-net:
+        ipv4_address: 10.5.0.5
+    restart: on-failure
+    environment:
+      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
+      SPRING_PROFILES_ACTIVE: "docker-env"
+      DATA_FILE: "/temp/"
+      WAIT_HOSTS: kafka:29092, websocket_producer:8080
+    depends_on:
+      - "kafka"
 
   websocket_frontend:
     image: "namson0482/websocket-frontend:1.0"
     container_name: "websocket-frontend-container"
     ports:
-      - "7070:80"
+      - "4200:80"
     networks:
       kafka-net:
         ipv4_address: 10.5.0.6
     depends_on:
-      - "check-kafka-started"
       - "websocket_producer"
       - "websocket_consumer"
 
@@ -105,9 +156,3 @@ services:
       KAFKA_BROKERCONNECT: "kafka:29092"
     depends_on:
       - "kafka"
-
-  check-kafka-started:
-    image: jwilder/dockerize:0.6.1
-    depends_on:
-      - kafka
-    command: 'dockerize -wait=tcp://kafka:29092'
