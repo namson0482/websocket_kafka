@@ -24,7 +24,7 @@ public class MessageService {
 
         Date date = new Date();
         long timeMilli = date.getTime();
-        String fileName = dataFilePath + "/" + "Sales_" + timeMilli;
+        String fileName = dataFilePath + "/" + "Sales_" + timeMilli + ".psv";
 
         try (PrintWriter writer = new PrintWriter(fileName)) {
             writer.write(HEADER_FILE + "\n");
