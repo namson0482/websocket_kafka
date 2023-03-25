@@ -111,5 +111,3 @@ services:
     depends_on:
       - kafka
     command: 'dockerize -wait=tcp://kafka:29092'
-
-
