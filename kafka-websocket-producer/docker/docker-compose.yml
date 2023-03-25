@@ -4,6 +4,9 @@ networks:
   kafka-net:
     name: kafka-net
     driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/24
 
 services:
   zookeeper:
@@ -12,7 +15,8 @@ services:
     hostname: kafka
     restart: "no"
     networks:
-      - kafka-net
+      kafka-net:
+        ipv4_address: 10.5.0.2
     ports:
       - "2181:2181"
 
@@ -22,7 +26,8 @@ services:
     hostname: kafka
     restart: "no"
     networks:
-      - kafka-net
+      kafka-net:
+        ipv4_address: 10.5.0.3
     ports:
       - "9092:9092"
     environment:
@@ -30,7 +35,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
       KAFKA_LISTENERS: DOCKER_INTERNAL://:29092,DOCKER_EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://10.5.0.3:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
@@ -41,6 +46,10 @@ services:
     container_name: "kafka-websocket-producer-container"
     ports:
       - "8080:8080" #<Computer_port>:<Container_port>
+    networks:
+      kafka-net:
+        ipv4_address: 10.5.0.4
+    restart: on-failure
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
@@ -53,16 +62,37 @@ services:
       container_name: "kafka-websocket-consumer-container"
       ports:
         - "8082:8082" #<Computer_port>:<Container_port>
+      networks:
+        kafka-net:
+          ipv4_address: 10.5.0.5
+      restart: on-failure
+      environment:
+        SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
+        SPRING_PROFILES_ACTIVE: "docker-env"
       depends_on:
         - "kafka"
         - "websocket_producer"
+
+  websocket_frontend:
+    image: "namson0482/websocket-frontend:1.0"
+    container_name: "websocket-frontend-container"
+    ports:
+      - "7070:80"
+    networks:
+      kafka-net:
+        ipv4_address: 10.5.0.6
+    depends_on:
+      - "kafka"
+      - "websocket_producer"
+      - "websocket_consumer"
 
   kafdrop:
     image: obsidiandynamics/kafdrop
     container_name: kafdrop
     restart: "no"
     networks:
-      - kafka-net
+      kafka-net:
+        ipv4_address: 10.5.0.7
     ports:
       - "9000:9000"
     environment:

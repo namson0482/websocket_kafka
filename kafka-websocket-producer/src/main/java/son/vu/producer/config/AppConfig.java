@@ -1,6 +1,8 @@
 package son.vu.producer.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -12,30 +14,28 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 @EnableScheduling
 public class AppConfig {
 
-    private final KafkaProperties kafkaProperties;
+    @Value("${spring.kafka.producer.bootstrap-servers}")
+    public String bootstrapServers;
 
     @Value("${app.data-file}")
     public String dataFile;
 
 
-    @Autowired
-    public AppConfig(KafkaProperties kafkaProperties) {
-        this.kafkaProperties = kafkaProperties;
-    }
-
     @Bean
     public ProducerFactory<String, String> producerFactory() {
-        // get configs on application.properties/yml
-        Map<String, Object> properties = kafkaProperties.buildProducerProperties();
-        return new DefaultKafkaProducerFactory<>(properties);
+        Map<String, Object> configProps = new HashMap<>();
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        return new DefaultKafkaProducerFactory<>(configProps);
     }
-
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
