@@ -26,8 +26,10 @@ export class MessageService {
           const arrayTempOne = value.split('@');
           that.msg = [];
           for (let i = 0; i < arrayTempOne.length; i++) {
-            const arrayTempTwo = arrayTempOne[i].split('$');
+            let arrayTempTwo: any[] = [];
+            arrayTempTwo = arrayTempOne[i].split('$');
             console.log(arrayTempTwo);
+            // @ts-ignore
             that.msg.push(arrayTempTwo);
           }
         }
