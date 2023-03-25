@@ -4,11 +4,8 @@ FROM amazoncorretto:11-alpine-jdk
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.10.0/wait /wait
 RUN chmod +x /wait
 
-## Add your application to the docker image
-ADD MySuperApp.sh /MySuperApp.sh
-
 ## Launch the wait tool and then your application
-CMD /wait && /MySuperApp.sh
+CMD /wait
 
 
 EXPOSE 8082 8082
