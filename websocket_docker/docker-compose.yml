@@ -13,7 +13,7 @@ services:
     image: confluentinc/cp-zookeeper:7.2.1
     container_name: zookeeper
     hostname: kafka
-    restart: "no"
+    restart: on-failure
     networks:
       kafka-net:
         ipv4_address: 10.5.0.2
@@ -27,7 +27,7 @@ services:
     image: confluentinc/cp-kafka:7.2.1
     container_name: kafka
     hostname: kafka
-    restart: "no"
+    restart: on-failure
     networks:
       kafka-net:
         ipv4_address: 10.5.0.3
@@ -55,6 +55,7 @@ services:
     image: confluentinc/cp-schema-registry:7.2.1
     hostname: schema-registry
     container_name: schema-registry
+    restart: on-failure
     depends_on:
       - zookeeper
       - kafka

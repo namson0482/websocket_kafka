@@ -63,7 +63,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
-
         registry.addEndpoint("/socket")
                 .setAllowedOrigins("http://localhost:4200", "http://websocket:4200"
                 , "http://localhost:7070", "http://websocket:7070"
