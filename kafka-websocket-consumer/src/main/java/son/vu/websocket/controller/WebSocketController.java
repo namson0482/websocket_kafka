@@ -1,6 +1,5 @@
 package son.vu.websocket.controller;
 
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import son.vu.websocket.config.ApplicationBean;
 import son.vu.websocket.model.Passport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +35,4 @@ public class WebSocketController {
         System.out.println(passport);
         this.template.convertAndSend("/passport",  passport);
     }
-
 }
