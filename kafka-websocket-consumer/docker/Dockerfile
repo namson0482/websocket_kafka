@@ -1,6 +1,6 @@
 FROM amazoncorretto:11-alpine-jdk
 
-RUN apt-get update && apt-get install -y curl && apt-get clean
+RUN apk --no-cache add curl
 
 # https://github.com/ufoscout/docker-compose-wait
 ## Add the wait script to the image

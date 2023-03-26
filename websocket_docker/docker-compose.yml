@@ -116,10 +116,10 @@ services:
     ports:
       - "8082:8082" #<Computer_port>:<Container_port>
     # Uncomment code below if you want to mount local directory to container directory
-#    volumes:
-#      - type: bind
-#        source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
-#        target: /temp/
+    volumes:
+      - type: bind
+        source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
+        target: /temp/
     networks:
       kafka-net:
         ipv4_address: 10.5.0.5
