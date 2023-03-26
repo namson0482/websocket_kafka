@@ -3,6 +3,7 @@ package son.vu.websocket.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import son.vu.websocket.config.ApplicationBean;
 import son.vu.websocket.controller.WebSocketController;
 import son.vu.websocket.domain.Message;
 import son.vu.websocket.domain.dto.MessageDto;
@@ -28,6 +29,9 @@ public class Consumer {
     private final MessageService messageService;
 
     private final WebSocketController webSocketController;
+
+    @Autowired
+    ApplicationBean applicationBean;
 
     @Autowired
     public Consumer(ObjectMapper objectMapper, ModelMapper modelMapper, MessageService messageService, WebSocketController webSocketController) {
@@ -91,6 +95,7 @@ public class Consumer {
 
         String result = proceedMessage(arrayValues);
 
+        applicationBean.setData(result);
         webSocketController.sendMessage(result);
         messageService.persistMessage(arrayValues);
     }

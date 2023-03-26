@@ -34,7 +34,10 @@ export class MessageService {
           }
         }
       });
+      that.sendMessage("hello");
     });
+
+
   }
 
   sendMessage(message) {
