@@ -1,5 +1,7 @@
 FROM amazoncorretto:11-alpine-jdk
 
+RUN apt-get update && apt-get install -y curl && apt-get clean
+
 # https://github.com/ufoscout/docker-compose-wait
 ## Add the wait script to the image
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.10.0/wait /wait
