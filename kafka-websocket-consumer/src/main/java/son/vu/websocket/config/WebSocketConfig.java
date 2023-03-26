@@ -4,8 +4,10 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -48,6 +50,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
+    }
+
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Bean
+    public ApplicationBean getApplicationBean() {
+        return new ApplicationBean();
     }
 
 

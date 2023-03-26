@@ -13,12 +13,12 @@ public class WebSocketController {
 
     private final SimpMessagingTemplate template;
 
-    @Autowired
-    ApplicationBean applicationBean;
+    final ApplicationBean applicationBean;
 
     @Autowired
-    WebSocketController(SimpMessagingTemplate template){
+    WebSocketController(SimpMessagingTemplate template, ApplicationBean applicationBean){
         this.template = template;
+        this.applicationBean = applicationBean;
     }
 
     @MessageMapping("/send/message")
