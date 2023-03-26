@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  app_url: 'http://websocket:8082/socket'
+  app_url: 'http://10.5.0.5:8082/socket'
 };
 
 /*
