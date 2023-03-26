@@ -3,13 +3,13 @@
 ```
     127.0.0.1   websocket
 ```
-- Build kafka-websocket-consumer image, go to  kafka-websocket-consumer/docker
+- Build kafka-websocket-consumer image: Go to kafka-websocket-consumer and execute a command: mvn clean package -DskipTests then go to  kafka-websocket-consumer/docker
 ```
 docker build -t namson0482/kafka-websocket-consumer .
 docker tag namon0482/kafka-websocket-consumer:latest namson0482/kafka-websocket-consumer:1.0
 docket push namson0482/kafka-websocket-consumer:1.0
 ```
-- Build kafka-websocket-producer image, go to  kafka-websocket-producer/docker
+- Build kafka-websocket-producer image: Go to kafka-websocket-consumer and execute a command: mvn clean package -DskipTests and go to  kafka-websocket-producer/docker
 ```
 docker build -t namson0482/kafka-websocket-producer .
 docker tag namon0482/kafka-websocket-producer:latest namson0482/kafka-websocket-producer:1.0
