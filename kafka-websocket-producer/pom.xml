@@ -8,11 +8,13 @@
 		<version>2.6.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.github.pedroluiznogueira</groupId>
+
+	<groupId>son.vu</groupId>
 	<artifactId>kafka-websocket-producer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>kafka-websocket-producer</name>
 	<description>Kafka Websocket Producer</description>
+
 	<properties>
 		<java.version>11</java.version>
 	</properties>
