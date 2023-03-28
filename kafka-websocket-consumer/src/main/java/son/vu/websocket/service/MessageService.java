@@ -32,7 +32,7 @@ public class MessageService {
                 writer.write(item + "\n");
             }
             writer.close();
-            System.out.println("Write file done!");
+            log.info("Write file done!");
         } catch (FileNotFoundException e) {
             log.error(e.getMessage());
         }

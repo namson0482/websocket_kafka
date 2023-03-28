@@ -91,10 +91,9 @@ public class Consumer {
         String value = messageConvert.getItem() + "%" + messageConvert.getAmount();
 
         String []arrayValues = messageConvert.getItem().split("\n");
-        log.info("Total items: {}", arrayValues.length );
+        log.info("Just consume a message and total items: {}", arrayValues.length );
 
         String result = proceedMessage(arrayValues);
-
         applicationBean.setData(result);
         webSocketController.sendMessage(result);
         messageService.persistMessage(arrayValues);

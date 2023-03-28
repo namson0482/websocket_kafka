@@ -68,9 +68,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
         registry.addEndpoint("/socket")
-                .setAllowedOrigins("http://localhost:4200", "http://websocket:4200"
-                        , "http://localhost:6060", "http://websocket:6060"
-                , "http://localhost:7070", "http://keycloak:7070")
+//                .setAllowedOrigins("http://localhost:4200", "http://websocket:4200"
+//                        , "http://localhost:6060", "http://websocket:6060"
+//                , "http://localhost:7070", "http://keycloak:7070")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
