@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import son.vu.avro.domain.SaleDetail;
+import son.vu.avro.domain.SaleDetailRecord;
+import son.vu.avro.domain.SaleReport;
 import son.vu.producer.config.AppConfig;
 import son.vu.producer.domain.MessageContent;
 import son.vu.producer.domain.SalesDetailBean;
@@ -32,14 +34,18 @@ import java.util.*;
 public class SendMessageTask {
     private final MessageService messageOrderService;
 
-    @Autowired
-    AppConfig appConfig;
+    final AppConfig appConfig;
 
     private final String TEMP_FILE = System.getProperty("user.home") + "/websocket.temp";
 
+    private String startDate;
+
+    private String endDate;
+
     @Autowired
-    public SendMessageTask(MessageService messageOrderService) {
+    public SendMessageTask(MessageService messageOrderService, AppConfig appConfig) {
         this.messageOrderService = messageOrderService;
+        this.appConfig = appConfig;
     }
 
 
@@ -73,6 +79,8 @@ public class SendMessageTask {
             calendar.setTime(date);
             int lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
             result = "Sales_" + "2022" + month + "01_" + "2022" + month + lastDay + ".psv";
+            startDate = "2022" + month + "01";
+            endDate = "2022" + month +  "" + lastDay;
 
         } catch (IOException e) {
 
@@ -82,29 +90,7 @@ public class SendMessageTask {
         return result;
     }
 
-    public List<List<String>> readCSV() {
-
-        List<List<String>> records = null;
-        try {
-            String fileName = getFileName();
-            log.info(fileName);
-            records = new ArrayList<List<String>>();
-            try (CSVReader csvReader = new CSVReader(new FileReader(appConfig.dataFile + "/" + fileName));) {
-                String[] values = null;
-                while ((values = csvReader.readNext()) != null) {
-                    records.add(Arrays.asList(values));
-                }
-            } catch (Exception e) {
-
-            }
-        } catch (Exception e) {
-        }
-        return records;
-    }
-
-
-    List<SaleDetail>  readFilePSV() throws IOException {
-
+    SaleReport  readFilePSV() throws IOException {
         String fileName = getFileName();
         try (
                 BufferedReader reader = Files.newBufferedReader(Paths.get(appConfig.dataFile + "/" + fileName));
@@ -116,18 +102,23 @@ public class SendMessageTask {
                     .build()
                     .parse();
 
-            List<SaleDetail> listResult = new ArrayList<>();
+            List<SaleDetailRecord> listResult = new ArrayList<>();
             for(SalesDetailBean item: beans) {
-                SaleDetail saleDetail = SaleDetail.newBuilder()
+                SaleDetailRecord saleDetailRecord = SaleDetailRecord.newBuilder()
                         .setProductName(item.getProductName())
                         .setSalesDate(item.getSalesDate())
                         .setStoreName(item.getStoreName())
                         .setSalesUnits(Integer.parseInt(item.getSalesUnits()))
                         .setSalesRevenue(Float.parseFloat(item.getSalesRevenue()))
                         .build();
-                listResult.add(saleDetail);
+                listResult.add(saleDetailRecord);
             }
-            return listResult;
+            SaleReport saleReport = SaleReport.newBuilder()
+                    .setStartDate(startDate)
+                    .setEndDate(endDate)
+                    .setSaleDetailList(listResult)
+                    .build();
+            return saleReport;
         }
 
     }
@@ -135,31 +126,8 @@ public class SendMessageTask {
     // run every 3 sec
     @Scheduled(fixedRateString = "${app.interval-time:60000}")
     public void send() throws IOException {
-//        long start = System.currentTimeMillis();
-//        List<List<String>> records = readCSV();
-//        long finish = System.currentTimeMillis();
-//        long timeElapsed = finish - start;
-//        log.info("Time Elapsed: {}" , timeElapsed);
-//
-//        MessageContent messageContent =  new MessageContent();
-//        String temp = "";
-//        for(List<String> list : records) {
-//            for(String item: list) {
-//                if(temp.equals("")) {
-//                    temp = item;
-//                } else {
-//                    temp += item;
-//                }
-//            }
-//            temp += "\n";
-//        }
-//        messageContent.setAmount(Double.valueOf(1.0));
-//        messageContent.setItem(temp);
-//        messageOrderService.createMessageOrder(messageContent);
-        List<SaleDetail> listBean = readFilePSV();
-        for(SaleDetail saleDetail: listBean) {
-            messageOrderService.createMessageOrder(saleDetail);
-        }
+        SaleReport saleReport = readFilePSV();
+        messageOrderService.createMessageOrder(saleReport);
         log.info("send successfully");
     }
 }

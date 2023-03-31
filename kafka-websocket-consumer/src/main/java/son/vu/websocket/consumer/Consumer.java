@@ -2,10 +2,17 @@ package son.vu.websocket.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.bean.ColumnPositionMappingStrategy;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.Data;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import son.vu.avro.domain.Customer;
 import son.vu.avro.domain.SaleDetail;
+import son.vu.avro.domain.SaleDetailRecord;
+import son.vu.avro.domain.SaleReport;
 import son.vu.websocket.config.ApplicationBean;
 import son.vu.websocket.controller.WebSocketController;
 import son.vu.websocket.domain.Message;
@@ -17,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,22 +95,23 @@ public class Consumer {
     }
 
     @KafkaListener(topics = orderTopic)
-    public void consumeMessage(SaleDetail saleDetail) throws JsonProcessingException {
+    public void consumeMessage(SaleReport saleReport) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+        FileWriter writer = new FileWriter("");
 
-        log.info(saleDetail.toString());
-//        MessageDto messageDto = objectMapper.readValue(message, MessageDto.class);
-//        Message messageConvert = modelMapper.map(messageDto, Message.class);
-//        String value = messageConvert.getItem() + "%" + messageConvert.getAmount();
-//
-//        String []arrayValues = messageConvert.getItem().split("\n");
-//        log.info("{}: {}", TOTAL_ITEM_RECEIVED, arrayValues.length );
-//
-//        String result = proceedMessage(arrayValues);
-//        applicationBean.setData(result);
-//        webSocketController.sendMessage(result);
-//        messageService.persistMessage(arrayValues);
+        var mappingStrategy =  new ColumnPositionMappingStrategy();
 
+        mappingStrategy.setType(SaleDetailRecord.class);
+        String[] columns = new String[]
+                { "SalesDate", "StoreName", "ProductName", "SalesUnits", "SalesRevenue" };
+        mappingStrategy.setColumnMapping(columns);
+        var builder=  new StatefulBeanToCsvBuilder(writer);
 
+        StatefulBeanToCsv beanWriter =
+                builder.withMappingStrategy(mappingStrategy).build();
+
+        // Write list to StatefulBeanToCsv object
+        beanWriter.write(saleReport.getSaleDetailList());
+        log.info(saleReport.toString());
     }
 
 }

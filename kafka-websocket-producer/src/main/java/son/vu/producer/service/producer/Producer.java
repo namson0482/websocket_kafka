@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import son.vu.avro.domain.SaleDetail;
+import son.vu.avro.domain.SaleReport;
 import son.vu.producer.domain.MessageContent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,10 @@ public class Producer {
     private String topic;
 
     private final ObjectMapper objectMapper;
-    private final KafkaTemplate<String, SaleDetail> kafkaTemplate;
+    private final KafkaTemplate<String, SaleReport> kafkaTemplate;
 
     @Autowired
-    public Producer(KafkaTemplate<String, SaleDetail> kafkaTemplate, ObjectMapper objectMapper) {
+    public Producer(KafkaTemplate<String, SaleReport> kafkaTemplate, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
     }
@@ -36,11 +37,10 @@ public class Producer {
 //        return "message sent";
 //    }
 
-    public String sendMessage(SaleDetail saleDetail) throws JsonProcessingException {
+    public String sendMessage(SaleReport saleReport) throws JsonProcessingException {
         Date dte=new Date();
         long milliSeconds = dte.getTime();
-
-        ProducerRecord<String, SaleDetail> producerRecord = new ProducerRecord<>(topic, milliSeconds + "", saleDetail);
+        ProducerRecord<String, SaleReport> producerRecord = new ProducerRecord<>(topic, milliSeconds + "", saleReport);
         kafkaTemplate.send(producerRecord);
         return "message sent";
 

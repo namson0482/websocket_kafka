@@ -17,7 +17,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import son.vu.avro.domain.SaleDetail;
+import son.vu.avro.domain.SaleReport;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,16 +34,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public String bootstrapServers;
 
     @Bean
-    public ConsumerFactory<String, SaleDetail> consumerFactory() {
+    public ConsumerFactory<String, SaleReport> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "group-id");
-//        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-//        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-//        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-//        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "100");
-//        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "15000");
-//        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         props.put("auto.commit.enable", "false");
         props.put("auto.offset.reset", "earliest");
@@ -55,8 +49,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         return new DefaultKafkaConsumerFactory<>(props);
     }
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, SaleDetail> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, SaleDetail>
+    public ConcurrentKafkaListenerContainerFactory<String, SaleReport> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, SaleReport>
                 factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
@@ -78,9 +72,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
         registry.addEndpoint("/socket")
-//                .setAllowedOrigins("http://localhost:4200", "http://websocket:4200"
-//                        , "http://localhost:6060", "http://websocket:6060"
-//                , "http://localhost:7070", "http://keycloak:7070")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }

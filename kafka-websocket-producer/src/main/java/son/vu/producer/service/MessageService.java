@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import son.vu.avro.domain.SaleDetail;
+import son.vu.avro.domain.SaleReport;
 import son.vu.producer.domain.MessageContent;
 import son.vu.producer.service.producer.Producer;
 
@@ -19,7 +20,7 @@ public class MessageService {
         this.producer = producer;
     }
 
-    public String createMessageOrder(SaleDetail saleDetail) throws JsonProcessingException {
-        return producer.sendMessage(saleDetail);
+    public String createMessageOrder(SaleReport saleReport) throws JsonProcessingException {
+        return producer.sendMessage(saleReport);
     }
 }
