@@ -1,5 +1,6 @@
 package son.vu.producer.config;
 
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,6 +14,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import son.vu.avro.domain.SaleDetail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,25 +31,28 @@ public class AppConfig {
 
 
     @Bean
-    public ProducerFactory<String, String> producerFactory() {
+    public ProducerFactory<String, SaleDetail> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put("acks", "all");
+        configProps.put("retries", "10");
+        configProps.put("key.serializer", StringSerializer.class.getName());
+        configProps.put("value.serializer", KafkaAvroSerializer.class.getName());
+        configProps.put("schema.registry.url", "http://127.0.0.1:8081");
         return new DefaultKafkaProducerFactory<>(configProps);
     }
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
+    public KafkaTemplate<String, SaleDetail> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    @Bean
-    public NewTopic topic() {
-        return TopicBuilder
-                .name("t.message.order")
-                .partitions(1)
-                .replicas(1)
-                .build();
-    }
+//    @Bean
+//    public NewTopic topic() {
+//        return TopicBuilder
+//                .name("t.message.order")
+//                .partitions(1)
+//                .replicas(1)
+//                .build();
+//    }
 
 }

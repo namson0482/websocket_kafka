@@ -21,7 +21,6 @@ public class MessageService {
 
     public void persistMessage(String []arrayValues) {
 
-
         Date date = new Date();
         long timeMilli = date.getTime();
         String fileName = dataFilePath + "/" + "Sales_" + timeMilli + ".psv";

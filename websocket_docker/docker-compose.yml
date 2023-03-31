@@ -104,7 +104,7 @@ services:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
       DATA_FILE: "/temp/"
-      INTERVAL_TIME: "10000"
+      INTERVAL_TIME: "70000"
       WAIT_HOSTS: kafka:29092
     depends_on:
       - "kafka"
@@ -144,16 +144,16 @@ services:
       - "websocket_producer"
       - "websocket_consumer"
 
-  kafdrop:
-    image: obsidiandynamics/kafdrop
-    container_name: kafdrop
-    restart: "no"
-    networks:
-      kafka-net:
-        ipv4_address: 10.5.0.7
-    ports:
-      - "9000:9000"
-    environment:
-      KAFKA_BROKERCONNECT: "kafka:29092"
-    depends_on:
-      - "kafka"
+#  kafdrop:
+#    image: obsidiandynamics/kafdrop
+#    container_name: kafdrop
+#    restart: "no"
+#    networks:
+#      kafka-net:
+#        ipv4_address: 10.5.0.7
+#    ports:
+#      - "9000:9000"
+#    environment:
+#      KAFKA_BROKERCONNECT: "kafka:29092"
+#    depends_on:
+#      - "kafka"

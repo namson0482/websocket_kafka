@@ -22,9 +22,9 @@ public class MessageController {
         this.msgService = msgService;
     }
 
-    @PostMapping
-    public String createFoodOrder(@RequestBody MessageContent messageContent) throws JsonProcessingException {
-        log.info("create food order request received");
-        return msgService.createMessageOrder(messageContent);
-    }
+//    @PostMapping
+//    public String createFoodOrder(@RequestBody MessageContent messageContent) throws JsonProcessingException {
+//        log.info("create food order request received");
+//        return msgService.createMessageOrder(messageContent);
+//    }
 }

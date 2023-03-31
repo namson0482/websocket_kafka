@@ -3,6 +3,9 @@ package son.vu.websocket.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import son.vu.avro.domain.Customer;
+import son.vu.avro.domain.SaleDetail;
 import son.vu.websocket.config.ApplicationBean;
 import son.vu.websocket.controller.WebSocketController;
 import son.vu.websocket.domain.Message;
@@ -28,6 +31,7 @@ public class Consumer {
     private final ModelMapper modelMapper;
     private final MessageService messageService;
 
+    static final String TOTAL_ITEM_RECEIVED = "Just consume a message and total items";
     private final WebSocketController webSocketController;
 
     @Autowired
@@ -76,27 +80,28 @@ public class Consumer {
             } else {
                 result += "@" + line ;
             }
-
-
         }
 
         return result;
     }
 
     @KafkaListener(topics = orderTopic)
-    public void consumeMessage(String message) throws JsonProcessingException {
+    public void consumeMessage(SaleDetail saleDetail) throws JsonProcessingException {
 
-        MessageDto messageDto = objectMapper.readValue(message, MessageDto.class);
-        Message messageConvert = modelMapper.map(messageDto, Message.class);
-        String value = messageConvert.getItem() + "%" + messageConvert.getAmount();
+        log.info(saleDetail.toString());
+//        MessageDto messageDto = objectMapper.readValue(message, MessageDto.class);
+//        Message messageConvert = modelMapper.map(messageDto, Message.class);
+//        String value = messageConvert.getItem() + "%" + messageConvert.getAmount();
+//
+//        String []arrayValues = messageConvert.getItem().split("\n");
+//        log.info("{}: {}", TOTAL_ITEM_RECEIVED, arrayValues.length );
+//
+//        String result = proceedMessage(arrayValues);
+//        applicationBean.setData(result);
+//        webSocketController.sendMessage(result);
+//        messageService.persistMessage(arrayValues);
 
-        String []arrayValues = messageConvert.getItem().split("\n");
-        log.info("Just consume a message and total items: {}", arrayValues.length );
 
-        String result = proceedMessage(arrayValues);
-        applicationBean.setData(result);
-        webSocketController.sendMessage(result);
-        messageService.persistMessage(arrayValues);
     }
 
 }

@@ -68,8 +68,6 @@
 			<version>${avro.version}</version>
 		</dependency>
 
-		<!--dependencies needed for the kafka part-->
-		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
