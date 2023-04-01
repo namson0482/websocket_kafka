@@ -42,11 +42,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         props.put("auto.commit.enable", "false");
         props.put("auto.offset.reset", "earliest");
         // avro part (deserializer)
-        props.put("key.deserializer", StringDeserializer.class.getName());
-        props.put("value.deserializer", KafkaAvroDeserializer.class.getName());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroDeserializer.class);
         props.put("schema.registry.url", "http://127.0.0.1:8081");
         props.put("specific.avro.reader", "true");
-        return new DefaultKafkaConsumerFactory<>(props);
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new AvroDeserializer<>(SaleReport.class));
     }
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, SaleReport> kafkaListenerContainerFactory() {

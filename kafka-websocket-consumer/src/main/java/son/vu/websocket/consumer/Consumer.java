@@ -44,10 +44,9 @@ public class Consumer {
     }
 
     @KafkaListener(topics = orderTopic)
-    public void consumeMessage(SaleReport saleReport) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+    public void consumeMessage(SaleReport saleReport) {
 
-        messageService.persistMessage(saleReport);
-        log.info(TOTAL_ITEM_RECEIVED);
+        log.info(saleReport.toString());
     }
 
 }

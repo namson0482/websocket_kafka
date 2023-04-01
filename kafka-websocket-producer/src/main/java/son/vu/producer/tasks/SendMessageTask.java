@@ -126,8 +126,8 @@ public class SendMessageTask {
     // run every 3 sec
     @Scheduled(fixedRateString = "${app.interval-time:60000}")
     public void send() throws IOException {
-        SaleReport saleReport = readFilePSV();
-        messageOrderService.createMessageOrder(saleReport);
-        log.info("send successfully");
+//        SaleReport saleReport = readFilePSV();
+//        messageOrderService.createMessageOrder(saleReport);
+        log.info("loop successfully");
     }
 }

@@ -32,8 +32,8 @@ public class AppConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put("acks", "all");
         configProps.put("retries", "10");
-        configProps.put("key.serializer", StringSerializer.class.getName());
-        configProps.put("value.serializer", KafkaAvroSerializer.class.getName());
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroSerializer.class);
         configProps.put("schema.registry.url", "http://127.0.0.1:8081");
         return new DefaultKafkaProducerFactory<>(configProps);
     }
