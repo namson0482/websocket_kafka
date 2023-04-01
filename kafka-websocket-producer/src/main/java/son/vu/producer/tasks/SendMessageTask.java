@@ -1,23 +1,14 @@
 package son.vu.producer.tasks;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
-import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import son.vu.avro.domain.SaleDetail;
 import son.vu.avro.domain.SaleDetailRecord;
 import son.vu.avro.domain.SaleReport;
 import son.vu.producer.config.AppConfig;
-import son.vu.producer.domain.MessageContent;
 import son.vu.producer.domain.SalesDetailBean;
 import son.vu.producer.service.MessageService;
 
@@ -27,7 +18,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -41,6 +35,9 @@ public class SendMessageTask {
     private String startDate;
 
     private String endDate;
+
+    @Value("${app.interval-time}")
+    private int intervalTime ;
 
     @Autowired
     public SendMessageTask(MessageService messageOrderService, AppConfig appConfig) {
@@ -126,8 +123,8 @@ public class SendMessageTask {
     // run every 3 sec
     @Scheduled(fixedRateString = "${app.interval-time:60000}")
     public void send() throws IOException {
-//        SaleReport saleReport = readFilePSV();
-//        messageOrderService.createMessageOrder(saleReport);
-        log.info("loop successfully");
+        SaleReport saleReport = readFilePSV();
+        messageOrderService.createMessageOrder(saleReport);
+        log.info("{} millisecond read data one time and successfully", intervalTime);
     }
 }

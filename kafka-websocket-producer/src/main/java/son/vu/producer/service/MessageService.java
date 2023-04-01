@@ -20,7 +20,7 @@ public class MessageService {
         this.producer = producer;
     }
 
-    public String createMessageOrder(SaleReport saleReport) throws JsonProcessingException {
+    public String createMessageOrder(SaleReport saleReport) {
         return producer.sendMessage(saleReport);
     }
 }

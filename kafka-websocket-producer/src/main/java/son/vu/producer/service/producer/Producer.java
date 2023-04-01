@@ -31,36 +31,10 @@ public class Producer {
         this.objectMapper = objectMapper;
     }
 
-//    public String sendMessage(MessageContent messageContent) throws JsonProcessingException {
-//        String orderAsMessage = objectMapper.writeValueAsString(messageContent);
-//        kafkaTemplate.send(orderTopic, orderAsMessage);
-//        log.info("============================= Message order produced =============================");
-//        return "message sent";
-//    }
-
-    public String sendMessage(SaleReport saleReport) throws JsonProcessingException {
+    public String sendMessage(SaleReport saleReport) {
         Date dte=new Date();
         long milliSeconds = dte.getTime();
-
-        List<SaleDetailRecord> listSaleDetailRecord = new ArrayList();
-        SaleDetailRecord saleDetailRecord = SaleDetailRecord.newBuilder()
-                .setSalesDate("12102022")
-                .setSalesUnits(1)
-                .setSalesRevenue(2000f)
-                .setProductName("Tivi")
-                .setStoreName("Outlet one")
-                .build();
-
-        listSaleDetailRecord.add(saleDetailRecord);
-
-
-        SaleReport value = SaleReport.newBuilder()
-                .setEndDate("10102022")
-                .setStartDate("12102022")
-                .setSaleDetailList(listSaleDetailRecord)
-                .build();
-
-        ProducerRecord<String, SaleReport> producerRecord = new ProducerRecord<>(topic, milliSeconds + "", value);
+        ProducerRecord<String, SaleReport> producerRecord = new ProducerRecord<>(topic, milliSeconds + "", saleReport);
         userKafkaTemplate.send(producerRecord);
         return "message sent";
 

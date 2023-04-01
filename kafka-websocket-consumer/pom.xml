@@ -129,10 +129,10 @@
 						</goals>
 						<configuration>
 							<sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
-							<stringType>String</stringType>
-							<createSetters>false</createSetters>
-							<enableDecimalLogicalType>true</enableDecimalLogicalType>
-							<fieldVisibility>private</fieldVisibility>
+<!--							<stringType>String</stringType>-->
+<!--							<createSetters>false</createSetters>-->
+<!--							<enableDecimalLogicalType>true</enableDecimalLogicalType>-->
+<!--							<fieldVisibility>private</fieldVisibility>-->
 						</configuration>
 					</execution>
 				</executions>
