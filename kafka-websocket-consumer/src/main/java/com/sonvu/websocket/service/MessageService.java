@@ -1,19 +1,18 @@
 package com.sonvu.websocket.service;
 
-import com.opencsv.bean.ColumnPositionMappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.sonvu.avro.domain.SaleDetailRecord;
+import com.sonvu.avro.domain.SaleReport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.sonvu.avro.domain.SaleDetailRecord;
-import com.sonvu.avro.domain.SaleReport;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -27,6 +26,8 @@ public class MessageService {
     private static final String FILE_HEADER = "\"SalesDate\"|\"StoreName\"|\"ProductName\"|\"SalesUnits\"|\"SalesRevenue\"";
 
     private static final String NEW_LINE_SEPARATOR = "\n";
+
+
 
     public void persistMessage(SaleReport saleReport) throws CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, IOException {
 

@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message {
+public class Product {
 
-    private Long id;
-    private String item;
-    private Double amount;
+    private String name;
+
+    private int salesUnit;
+
+    private String totalMoney;
 }
