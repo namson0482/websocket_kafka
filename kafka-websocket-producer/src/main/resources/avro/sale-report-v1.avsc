@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "son.vu.avro.domain",
+  "namespace": "com.sonvu.avro.domain",
   "name": "SaleReport",
   "fields": [
     {
