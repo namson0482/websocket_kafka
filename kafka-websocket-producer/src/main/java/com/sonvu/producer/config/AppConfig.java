@@ -1,6 +1,7 @@
 package com.sonvu.producer.config;
 
 import com.sonvu.avro.domain.SaleReport;
+import com.sonvu.producer.serializer.AvroSerializer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

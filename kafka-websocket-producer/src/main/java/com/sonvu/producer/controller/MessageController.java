@@ -24,7 +24,7 @@ public class MessageController {
     @PostMapping(value = "/sale")
     public String kafkaMessage(@RequestBody SaleReport message) {
         log.info(message.toString());
-        msgService.createMessageOrder(message);
+        msgService.sendMessage(message);
         return "Success";
     }
 

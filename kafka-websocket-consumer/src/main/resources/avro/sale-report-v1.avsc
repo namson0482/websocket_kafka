@@ -32,7 +32,7 @@
                 "type": "int"
             },
             {   "name": "sales_revenue",
-                "type": "double"
+                "type": "string"
             }
           ]
         }

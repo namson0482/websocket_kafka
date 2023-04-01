@@ -25,7 +25,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class SendMessageTask {
+public class MessageTask {
     private final MessageService messageOrderService;
 
     final AppConfig appConfig;
@@ -40,7 +40,7 @@ public class SendMessageTask {
     private int intervalTime ;
 
     @Autowired
-    public SendMessageTask(MessageService messageOrderService, AppConfig appConfig) {
+    public MessageTask(MessageService messageOrderService, AppConfig appConfig) {
         this.messageOrderService = messageOrderService;
         this.appConfig = appConfig;
     }
@@ -106,7 +106,7 @@ public class SendMessageTask {
                         .setSalesDate(item.getSalesDate())
                         .setStoreName(item.getStoreName())
                         .setSalesUnits(Integer.parseInt(item.getSalesUnits()))
-                        .setSalesRevenue(Float.parseFloat(item.getSalesRevenue()))
+                        .setSalesRevenue(item.getSalesRevenue())
                         .build();
                 listResult.add(saleDetailRecord);
             }
@@ -124,7 +124,7 @@ public class SendMessageTask {
     @Scheduled(fixedRateString = "${app.interval-time:60000}")
     public void send() throws IOException {
         SaleReport saleReport = readFilePSV();
-        messageOrderService.createMessageOrder(saleReport);
+        messageOrderService.sendMessage(saleReport);
         log.info("{} millisecond read data one time and successfully", intervalTime);
     }
 }
