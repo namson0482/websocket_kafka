@@ -1,6 +1,9 @@
 package com.sonvu.websocket.config;
 
 import com.sonvu.avro.domain.SaleReport;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.modelmapper.ModelMapper;
@@ -40,11 +43,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         props.put("auto.commit.enable", "false");
         props.put("auto.offset.reset", "earliest");
-        // avro part (deserializer)
+
+//        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+//        props.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, false);
+//
+//        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://127.0.0.1:8081");
+//        props.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
+//        return new DefaultKafkaConsumerFactory<>(props);
+
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroDeserializer.class);
-        props.put("schema.registry.url", "http://127.0.0.1:8081");
-        props.put("specific.avro.reader", "true");
+//        props.put("schema.registry.url", "http://127.0.0.1:8081");
+//        props.put("specific.avro.reader", "true");
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new AvroDeserializer<>(SaleReport.class));
     }
     @Bean

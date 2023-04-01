@@ -31,8 +31,6 @@ public class Consumer {
 
     private static final String orderTopic = "${topic.name}";
 
-    private final ObjectMapper objectMapper;
-    private final ModelMapper modelMapper;
     private final MessageService messageService;
 
     static final String TOTAL_ITEM_RECEIVED = "Just consumed a message and total items {}";
@@ -42,9 +40,7 @@ public class Consumer {
     ApplicationBean applicationBean;
 
     @Autowired
-    public Consumer(ObjectMapper objectMapper, ModelMapper modelMapper, MessageService messageService, WebSocketController webSocketController) {
-        this.objectMapper = objectMapper;
-        this.modelMapper = modelMapper;
+    public Consumer(MessageService messageService, WebSocketController webSocketController) {
         this.messageService = messageService;
         this.webSocketController = webSocketController;
     }
@@ -104,7 +100,7 @@ public class Consumer {
         return nf.format(value);
     }
 
-    private void proceedMessage(SaleReport saleReport) {
+    private String proceedMessage(SaleReport saleReport) {
         Locale vn = new Locale("vi", "VN");
 
         Map<String, Product> map = new HashMap();
@@ -123,8 +119,12 @@ public class Consumer {
                 product.setSalesUnit(product.getSalesUnit() + record.getSalesUnits());
             }
         }
+
+        String result = "";
+
         int totalLength = 35;
         for (Map.Entry<String, Product> item : map.entrySet()) {
+            Product product = item.getValue();
             String sTempName = item.getValue().getName();
             while (sTempName.length() < totalLength) {
                 sTempName += " ";
@@ -134,15 +134,29 @@ public class Consumer {
                 sTempSalesUnit += " ";
             }
 
+            String line = product.getName() + "$" + product.getSalesUnit() + "$" + product.getTotalMoney();
+            if(result.equals("")) {
+                result += line;
+            } else {
+                result += "@" + line ;
+            }
+
             log.info("{} {} {}", sTempName, sTempSalesUnit, item.getValue().getTotalMoney());
         }
+
+        return result;
+
+
     }
 
     @KafkaListener(topics = orderTopic)
     public void consumeMessage(SaleReport saleReport) {
-        proceedMessage(saleReport);
+        String res = proceedMessage(saleReport);
+        applicationBean.setData(res);
+        webSocketController.sendMessage(res);
         try {
             messageService.persistMessage(saleReport);
+
             log.info(TOTAL_ITEM_RECEIVED, saleReport.getSaleDetailList().size());
         } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | IOException e) {
             log.error(e.getMessage());
