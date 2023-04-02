@@ -1,0 +1,42 @@
+{
+  "type": "record",
+  "namespace": "com.sonvu.avro.domain",
+  "name": "SaleReport",
+  "fields": [
+    {
+      "name": "start_date",
+      "type": "string"
+    },
+    {
+      "name": "end_date",
+      "type": "string"
+    },
+    {
+      "name": "saleDetailList",
+      "type": {
+        "type": "array",
+        "items":{
+          "name": "SaleDetailRecord",
+          "type": "record",
+          "fields":[
+            {   "name": "sales_date",
+                "type": "string"
+            },
+            {   "name": "store_name",
+                "type": "string"
+            },
+            {   "name": "product_name",
+                "type": "string"
+            },
+            {   "name": "sales_units",
+                "type": "int"
+            },
+            {   "name": "sales_revenue",
+                "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
