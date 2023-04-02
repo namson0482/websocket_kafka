@@ -10,7 +10,7 @@ RUN chmod +x /wait
 ## Launch the wait tool and then your application
 CMD /wait
 
-EXPOSE 8082 8082
+EXPOSE 6363 6363
 RUN mkdir -p /temp
 RUN chmod 777 /temp
 

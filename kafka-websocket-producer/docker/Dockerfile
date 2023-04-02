@@ -8,7 +8,7 @@ RUN chmod +x /wait
 CMD /wait
 
 
-EXPOSE 8082 8082
+EXPOSE 6064 6064
 RUN mkdir -p /temp
 RUN chmod 777 /temp
 COPY  data/* /temp/
