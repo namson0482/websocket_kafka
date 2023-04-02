@@ -31,11 +31,15 @@ public class Consumer {
 
     private final MessageService messageService;
 
-    static final String TOTAL_ITEM_RECEIVED = "Just consumed a message and total items {}";
+    static final String TOTAL_ITEM_RECEIVED = "Just consumed a message and total records read {} and total money {}";
     private final WebSocketController webSocketController;
+
+    private final static Locale VN = new Locale("vi", "VN");
 
     @Autowired
     ApplicationBean applicationBean;
+
+
 
     @Autowired
     public Consumer(MessageService messageService, WebSocketController webSocketController) {
@@ -98,13 +102,12 @@ public class Consumer {
         return nf.format(value);
     }
 
-    private String proceedMessage(SaleReport saleReport) {
-        Locale vn = new Locale("vi", "VN");
+    private Map<String, Product> sortOutSaleDetailRecord(SaleReport saleReport) {
 
         Map<String, Product> map = new HashMap();
         List<SaleDetailRecord> listSaleDetailRecord = saleReport.getSaleDetailList();
         for (SaleDetailRecord record : listSaleDetailRecord) {
-            String revenue = getDigit(record.getSalesRevenue().toString(), vn);
+            String revenue = getDigit(record.getSalesRevenue().toString(), VN);
             String key = record.getProductName().toString().toLowerCase();
 
             if (!map.containsKey(key)) {
@@ -117,13 +120,18 @@ public class Consumer {
                 product.setSalesUnit(product.getSalesUnit() + record.getSalesUnits());
             }
         }
+        return map;
+    }
 
+    private String proceedMessage(SaleReport saleReport) {
+
+        Map<String, Product> map = sortOutSaleDetailRecord(saleReport);
         String result = "";
-
         int totalLength = 35;
+        String sTempTotalMoney = "0";
         for (Map.Entry<String, Product> item : map.entrySet()) {
             Product product = item.getValue();
-            String sTempName = item.getValue().getName();
+            String sTempName = product.getName();
             while (sTempName.length() < totalLength) {
                 sTempName += " ";
             }
@@ -138,13 +146,38 @@ public class Consumer {
             } else {
                 result += "@" + line;
             }
-
-            log.info("{} {} {}", sTempName, sTempSalesUnit, item.getValue().getTotalMoney());
+            sTempTotalMoney = addTwoNumbers(sTempTotalMoney, product.getTotalMoney());
+            log.info("{} {} {}", sTempName, sTempSalesUnit, addDelimiter(item.getValue().getTotalMoney(), "."));
         }
-
+        applicationBean.setMoney(sTempTotalMoney);
         return result;
 
+    }
 
+    private static String addDelimiter(String original, String separator) {
+        String result = "";
+        int k = 0;
+        for (int i = original.length(); i > 0; i--) {
+            result = original.charAt(i - 1) + result;
+            k++;
+            if (k % 3 == 0 && i > 1) {
+                result = separator + result;
+                k = 0;
+            }
+        }
+        return result;
+    }
+
+    private static String addDelimiter1(String original, String separator) {
+
+        String result = "";
+        for (int i = 1; i < original.length() + 1; i++) {
+            result += original.charAt(i - 1);
+            if (i % 3 == 0 && i != original.length()) {
+                result += separator;
+            }
+        }
+        return result;
     }
 
     @KafkaListener(topics = "${spring.kafka.consumer.topic}", groupId = "${spring.kafka.consumer.group-id}")
@@ -154,7 +187,7 @@ public class Consumer {
         webSocketController.sendMessage(res);
         try {
             messageService.persistMessage(saleReport);
-            log.info(TOTAL_ITEM_RECEIVED, saleReport.getSaleDetailList().size());
+            log.info(TOTAL_ITEM_RECEIVED, saleReport.getSaleDetailList().size(), addDelimiter(applicationBean.getMoney(), "."));
             int k = 0;
             String stemp = "";
             while (k++ < 70) stemp += "=";

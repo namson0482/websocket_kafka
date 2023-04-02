@@ -11,4 +11,6 @@ public class ApplicationBean {
     }
     private String data;
 
+    private String money;
+
 }

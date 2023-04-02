@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormatSymbols;
 import java.util.Date;
-import java.util.Locale;
 
 @Slf4j
 @Service
@@ -22,12 +20,10 @@ public class MessageService {
     @Value("${app.data-file}")
     public String dataFilePath;
 
-    private static final String COMMA_DELIMITER = "|";
+    private static final String SLASH_DELIMITER = "|";
     private static final String FILE_HEADER = "\"SalesDate\"|\"StoreName\"|\"ProductName\"|\"SalesUnits\"|\"SalesRevenue\"";
 
     private static final String NEW_LINE_SEPARATOR = "\n";
-
-
 
     public void persistMessage(SaleReport saleReport) throws CsvRequiredFieldEmptyException, CsvDataTypeMismatchException, IOException {
 
@@ -43,13 +39,13 @@ public class MessageService {
             fileWriter.append(NEW_LINE_SEPARATOR);
             for(SaleDetailRecord saleDetailRecord: saleReport.getSaleDetailList()) {
                 fileWriter.append(String.valueOf(saleDetailRecord.getSalesDate()));
-                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(SLASH_DELIMITER);
                 fileWriter.append(String.valueOf(saleDetailRecord.getStoreName()));
-                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(SLASH_DELIMITER);
                 fileWriter.append(String.valueOf(saleDetailRecord.getProductName()));
-                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(SLASH_DELIMITER);
                 fileWriter.append(String.valueOf(saleDetailRecord.getSalesUnits()));
-                fileWriter.append(COMMA_DELIMITER);
+                fileWriter.append(SLASH_DELIMITER);
                 fileWriter.append(String.valueOf(saleDetailRecord.getSalesRevenue()));
                 fileWriter.append(NEW_LINE_SEPARATOR);
             }
