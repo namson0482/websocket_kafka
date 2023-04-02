@@ -1,4 +1,4 @@
-package com.sonvu.websocket.controller;
+package son.vu.websocket.controller;
 
 import com.sonvu.websocket.config.ApplicationBean;
 import com.sonvu.websocket.model.Passport;
@@ -35,4 +35,5 @@ public class WebSocketController {
         System.out.println(passport);
         this.template.convertAndSend("/passport",  passport);
     }
+
 }
