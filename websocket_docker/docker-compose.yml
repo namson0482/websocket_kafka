@@ -117,6 +117,7 @@ services:
       kafka-net:
         ipv4_address: 10.5.0.4
     restart: unless-stopped
+#    command: scripts/wait-for-it.sh -t 120 kafka:29092
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
@@ -124,6 +125,8 @@ services:
       INTERVAL_TIME: "300000"
       SCHEMA_REGISTRY_HOST: "schema-registry"
       WAIT_HOSTS: kafka:29092, schema-registry:8081
+      WAIT_BEFORE: 10
+      WAIT_LOGGER_LEVEL: info
     depends_on:
       - "kafka"
       - "schema-registry"
@@ -134,7 +137,8 @@ services:
     hostname: websocket_consumer
     ports:
       - "6363:6363" #<Computer_port>:<Container_port>
-    # Uncomment code below if you want to mount local directory to container directory
+#    command: scripts/wait-for-it.sh -t 120 kafka:29092
+#   Uncomment code below if you want to mount local directory to container directory
     volumes:
       - type: bind
         source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
@@ -148,7 +152,9 @@ services:
       SPRING_PROFILES_ACTIVE: "docker-env"
       DATA_FILE: "/temp/"
       SCHEMA_REGISTRY_HOST: "schema-registry"
-      WAIT_HOSTS: kafka:29092, websocket_producer:6064, schema-registry:8081
+      WAIT_HOSTS: websocket_producer:6064
+      WAIT_BEFORE: 20
+      WAIT_LOGGER_LEVEL: info
     depends_on:
       - "kafka"
       - "schema-registry"

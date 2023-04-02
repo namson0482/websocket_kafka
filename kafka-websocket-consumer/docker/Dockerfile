@@ -13,6 +13,8 @@ RUN chmod 777 /temp
 
 RUN mkdir -p /scripts
 RUN chmod 777 /scripts
+# https://github.com/vishnubob/wait-for-it
+COPY wait-for-it.sh /scripts
 
 COPY kafka-websocket-consumer-0.0.1-SNAPSHOT.jar kafka-websocket-consumer-0.0.1.jar
 
