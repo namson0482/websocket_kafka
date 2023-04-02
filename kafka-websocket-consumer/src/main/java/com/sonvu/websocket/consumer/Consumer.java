@@ -93,12 +93,6 @@ public class Consumer {
         }
         return sb.toString();
     }
-
-    public static String currencyWithChosenLocalisation(String value, Locale locale) {
-        NumberFormat nf = NumberFormat.getCurrencyInstance(locale);
-        return nf.format(value);
-    }
-
     private Map<String, Product> sortOutSaleDetailRecord(SaleReport saleReport) {
 
         Map<String, Product> map = new HashMap();
