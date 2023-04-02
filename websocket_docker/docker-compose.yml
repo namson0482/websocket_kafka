@@ -106,7 +106,7 @@ services:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
       DATA_FILE: "/temp/"
-      INTERVAL_TIME: "60000"
+      INTERVAL_TIME: "12055000"
       SCHEMA_REGISTRY_HOST: "schema-registry"
       WAIT_HOSTS: kafka:29092, schema-registry:8081
     depends_on:
