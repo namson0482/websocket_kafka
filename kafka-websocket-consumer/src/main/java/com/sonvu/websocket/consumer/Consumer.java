@@ -136,15 +136,20 @@ public class Consumer {
             while (sTempSalesUnit.length() < totalLength - 30) {
                 sTempSalesUnit += " ";
             }
+            String tempMoneyWithDilimiter = addDelimiter(product.getTotalMoney(), ".");
+            String tempMoneyFrontEnd = tempMoneyWithDilimiter;
+            while(tempMoneyWithDilimiter.length() < 17) {
+                tempMoneyWithDilimiter += " ";
+            }
 
-            String line = product.getName() + "$" + product.getSalesUnit() + "$" + product.getTotalMoney();
+            String line = product.getName() + "$" + product.getSalesUnit() + "$" + tempMoneyFrontEnd + "VNĐ";
             if (result.equals("")) {
                 result += line;
             } else {
                 result += "@" + line;
             }
             sTempTotalMoney = addTwoNumbers(sTempTotalMoney, product.getTotalMoney());
-            log.info("{} {} {}", sTempName, sTempSalesUnit, addDelimiter(item.getValue().getTotalMoney(), "."));
+            log.info("{} {} {}", sTempName, sTempSalesUnit, tempMoneyWithDilimiter + "VNĐ");
         }
         applicationBean.setMoney(sTempTotalMoney);
         return result;
@@ -160,18 +165,6 @@ public class Consumer {
             if (k % 3 == 0 && i > 1) {
                 result = separator + result;
                 k = 0;
-            }
-        }
-        return result;
-    }
-
-    private static String addDelimiter1(String original, String separator) {
-
-        String result = "";
-        for (int i = 1; i < original.length() + 1; i++) {
-            result += original.charAt(i - 1);
-            if (i % 3 == 0 && i != original.length()) {
-                result += separator;
             }
         }
         return result;
