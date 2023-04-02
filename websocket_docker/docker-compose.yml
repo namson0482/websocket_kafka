@@ -50,7 +50,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
 
-
   schema-registry:
     image: confluentinc/cp-schema-registry:7.2.1
     hostname: schema-registry
@@ -67,7 +66,7 @@ services:
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:29092'
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
     healthcheck:
       test: "curl -f http://localhost:8081 || exit 1"
 
@@ -107,10 +106,12 @@ services:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
       DATA_FILE: "/temp/"
-      INTERVAL_TIME: "10000"
-      WAIT_HOSTS: kafka:29092
+      INTERVAL_TIME: "60000"
+      SCHEMA_REGISTRY_HOST: "schema-registry"
+      WAIT_HOSTS: kafka:29092, schema-registry:8081
     depends_on:
       - "kafka"
+      - "schema-registry"
 
   websocket_consumer:
     image: "namson0482/kafka-websocket-consumer:1.0"
@@ -119,10 +120,10 @@ services:
     ports:
       - "6363:6363" #<Computer_port>:<Container_port>
     # Uncomment code below if you want to mount local directory to container directory
-    #    volumes:
-    #      - type: bind
-    #        source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
-    #        target: /temp/
+    volumes:
+      - type: bind
+        source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
+        target: /temp/
     networks:
       kafka-net:
         ipv4_address: 10.5.0.5
@@ -131,9 +132,11 @@ services:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
       DATA_FILE: "/temp/"
-      WAIT_HOSTS: kafka:29092, websocket_producer:8080
+      SCHEMA_REGISTRY_HOST: "schema-registry"
+      WAIT_HOSTS: kafka:29092, websocket_producer:8080, schema-registry:8081
     depends_on:
       - "kafka"
+      - "schema-registry"
 
   websocket_frontend:
     image: "namson0482/websocket-frontend:1.0"
