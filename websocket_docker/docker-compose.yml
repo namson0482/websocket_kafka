@@ -117,16 +117,16 @@ services:
       kafka-net:
         ipv4_address: 10.5.0.4
     restart: unless-stopped
-#    command: scripts/wait-for-it.sh -t 120 kafka:29092
+    command: bash -c "/scripts/wait-for-it.sh -t 20 kafka:29092 && /scripts/wait-for-it.sh -t 20 schema-registry:8081 && java -jar /kafka-websocket-producer-0.0.1.jar"
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       SPRING_PROFILES_ACTIVE: "docker-env"
       DATA_FILE: "/temp/"
       INTERVAL_TIME: "300000"
       SCHEMA_REGISTRY_HOST: "schema-registry"
-      WAIT_HOSTS: kafka:29092, schema-registry:8081
-      WAIT_BEFORE: 10
-      WAIT_LOGGER_LEVEL: info
+#      WAIT_HOSTS: kafka:29092, schema-registry:8081
+#      WAIT_BEFORE: 10
+#      WAIT_LOGGER_LEVEL: info
     depends_on:
       - "kafka"
       - "schema-registry"

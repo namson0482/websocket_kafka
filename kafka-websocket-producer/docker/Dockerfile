@@ -14,6 +14,9 @@ RUN mkdir -p /scripts
 RUN chmod 777 /scripts
 # https://github.com/vishnubob/wait-for-it
 COPY wait-for-it.sh /scripts
+RUN chmod +x /scripts/wait-for-it.sh
+
+RUN apk add --update bash && rm -rf /var/cache/apk/*
 
 COPY kafka-websocket-producer-0.0.1-SNAPSHOT.jar kafka-websocket-producer-0.0.1.jar
 
