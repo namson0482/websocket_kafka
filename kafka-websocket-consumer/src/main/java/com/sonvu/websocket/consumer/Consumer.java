@@ -31,7 +31,7 @@ public class Consumer {
 
     private final MessageService messageService;
 
-    static final String TOTAL_ITEM_RECEIVED = "Just consumed a message and total records read {} and total money {}";
+    static final String TOTAL_ITEM_RECEIVED = "Consumed done and {} records and money   {} VNĐ";
     private final WebSocketController webSocketController;
 
     private final static Locale VN = new Locale("vi", "VN");
@@ -39,9 +39,6 @@ public class Consumer {
     @Autowired
     ApplicationBean applicationBean;
 
-
-
-    @Autowired
     public Consumer(MessageService messageService, WebSocketController webSocketController) {
         this.messageService = messageService;
         this.webSocketController = webSocketController;
