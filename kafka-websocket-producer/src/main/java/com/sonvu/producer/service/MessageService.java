@@ -1,11 +1,10 @@
 package com.sonvu.producer.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sonvu.avro.domain.SaleReport;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,23 +14,22 @@ import java.util.Date;
 @Service
 public class MessageService {
 
-    @Value("${topic.name}")
-    private String topic;
+    private final KafkaTemplate<String, SaleReport> kafkaTemplate;
+    private final KafkaProperties kafkaProperties;
 
-    private final ObjectMapper objectMapper;
-    private final KafkaTemplate<String, SaleReport> userKafkaTemplate;
-
-    @Autowired
-    public MessageService(ObjectMapper objectMapper, KafkaTemplate<String, SaleReport> userKafkaTemplate) {
-        this.objectMapper = objectMapper;
-        this.userKafkaTemplate = userKafkaTemplate;
+    public MessageService(KafkaTemplate<String, SaleReport> kafkaTemplate, KafkaProperties kafkaProperties) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.kafkaProperties = kafkaProperties;
     }
+
 
     public String sendMessage(SaleReport saleReport) {
         Date dte=new Date();
         long milliSeconds = dte.getTime();
-        ProducerRecord<String, SaleReport> producerRecord = new ProducerRecord<>(topic, milliSeconds + "", saleReport);
-        userKafkaTemplate.send(producerRecord);
+
+        String kafkaTopic = kafkaProperties.getProducer().getProperties().get("topic");
+        log.info("Sending News '{}' to topic '{}'", saleReport.getStartDate(), kafkaTopic);
+        kafkaTemplate.send(kafkaTopic, milliSeconds + "", saleReport);
         return "message sent";
     }
 }

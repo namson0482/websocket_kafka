@@ -29,8 +29,6 @@ import java.util.Map;
 @Component
 public class Consumer {
 
-    private static final String orderTopic = "${topic.name}";
-
     private final MessageService messageService;
 
     static final String TOTAL_ITEM_RECEIVED = "Just consumed a message and total items {}";
@@ -130,15 +128,15 @@ public class Consumer {
                 sTempName += " ";
             }
             String sTempSalesUnit = item.getValue().getSalesUnit() + "";
-            while(sTempSalesUnit.length() < totalLength - 30) {
+            while (sTempSalesUnit.length() < totalLength - 30) {
                 sTempSalesUnit += " ";
             }
 
             String line = product.getName() + "$" + product.getSalesUnit() + "$" + product.getTotalMoney();
-            if(result.equals("")) {
+            if (result.equals("")) {
                 result += line;
             } else {
-                result += "@" + line ;
+                result += "@" + line;
             }
 
             log.info("{} {} {}", sTempName, sTempSalesUnit, item.getValue().getTotalMoney());
@@ -149,15 +147,18 @@ public class Consumer {
 
     }
 
-    @KafkaListener(topics = orderTopic)
+    @KafkaListener(topics = "${spring.kafka.consumer.topic}", groupId = "${spring.kafka.consumer.group-id}")
     public void consumeMessage(SaleReport saleReport) {
         String res = proceedMessage(saleReport);
         applicationBean.setData(res);
         webSocketController.sendMessage(res);
         try {
             messageService.persistMessage(saleReport);
-
             log.info(TOTAL_ITEM_RECEIVED, saleReport.getSaleDetailList().size());
+            int k = 0;
+            String stemp = "";
+            while (k++ < 70) stemp += "=";
+            log.info(stemp);
         } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | IOException e) {
             log.error(e.getMessage());
         }
