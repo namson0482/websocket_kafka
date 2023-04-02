@@ -1,4 +1,4 @@
-package son.vu.websocket.controller;
+package com.sonvu.websocket.controller;
 
 import com.sonvu.websocket.config.ApplicationBean;
 import com.sonvu.websocket.model.Passport;

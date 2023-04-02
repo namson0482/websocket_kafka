@@ -1,6 +1,5 @@
 package com.sonvu.websocket.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import com.sonvu.avro.domain.SaleDetailRecord;
@@ -9,17 +8,13 @@ import com.sonvu.websocket.config.ApplicationBean;
 import com.sonvu.websocket.controller.WebSocketController;
 import com.sonvu.websocket.domain.Product;
 import com.sonvu.websocket.service.MessageService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
