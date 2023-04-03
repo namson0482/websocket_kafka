@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.7"
 
 networks:
   kafka-net:
@@ -9,69 +9,72 @@ networks:
         - subnet: 10.5.0.0/24
 
 services:
-
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.1
+    image: confluentinc/cp-zookeeper:7.2.1
     container_name: zookeeper
-    hostname: zookeeper
-    restart: unless-stopped
+    hostname: kafka
+    restart: on-failure
     networks:
       kafka-net:
-        ipv4_address: 10.5.0.11
+        ipv4_address: 10.5.0.2
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-    healthcheck:
-      test: "echo stat | nc localhost $$ZOOKEEPER_CLIENT_PORT"
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:7.3.1
+    image: confluentinc/cp-kafka:7.2.1
     container_name: kafka
     hostname: kafka
-    restart: unless-stopped
+    restart: on-failure
     networks:
       kafka-net:
-        ipv4_address: 10.5.0.10
-    depends_on:
-      - zookeeper
+        ipv4_address: 10.5.0.3
     ports:
       - "9092:9092"
-      - "29092:29092"
+    depends_on:
+      - zookeeper
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: DOCKER_INTERNAL://:29092,DOCKER_EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "29092" ]
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.3.1
-    container_name: schema-registry
+    image: confluentinc/cp-schema-registry:7.2.1
     hostname: schema-registry
+    container_name: schema-registry
     restart: unless-stopped
-    networks:
-      kafka-net:
-        ipv4_address: 10.5.0.9
     depends_on:
+      - zookeeper
       - kafka
     ports:
       - "8081:8081"
+    networks:
+      kafka-net:
+        ipv4_address: 10.5.0.8
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:29092'
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
     healthcheck:
       test: "curl -f http://localhost:8081 || exit 1"
 
   schema-registry-ui:
     image: landoop/schema-registry-ui:0.9.5
     container_name: kafka-schema-registry-ui
+    hostname: kafka-schema-registry-ui
     restart: unless-stopped
-    networks:
-      kafka-net:
-        ipv4_address: 10.5.0.8
     depends_on:
       - schema-registry
     ports:
@@ -82,62 +85,27 @@ services:
     healthcheck:
       test: "wget --quiet --tries=1 --spider http://localhost:8000 || exit 1"
 
-  kafka-rest-proxy:
-    image: confluentinc/cp-kafka-rest:7.3.1
-    container_name: kafka-rest-proxy
-    restart: unless-stopped
-    networks:
-      kafka-net:
-        ipv4_address: 10.5.0.7
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:7.2.1
+    hostname: control-center
+    container_name: control-center
+    restart: on-failure
     depends_on:
-      - zookeeper
       - kafka
+      - schema-registry
     ports:
-      - "8082:8082"
-    environment:
-      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
-      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_REST_HOST_NAME: kafka-rest-proxy
-      KAFKA_REST_LISTENERS: http://0.0.0.0:8082
-      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry:8081
-      KAFKA_REST_CONSUMER_REQUEST_TIMEOUT_MS: 30000
-    healthcheck:
-      test: "curl -f http://localhost:8082 || exit 1"
-
-  kafka-topics-ui:
-    image: landoop/kafka-topics-ui:0.9.4
-    container_name: kafka-topics-ui
-    restart: unless-stopped
+      - "9021:9021"
     networks:
       kafka-net:
-        ipv4_address: 10.5.0.6
-    depends_on:
-      - kafka-rest-proxy
-    ports:
-      - "8085:8000"
+        ipv4_address: 10.5.0.9
     environment:
-      KAFKA_REST_PROXY_URL: http://kafka-rest-proxy:8082
-      PROXY: "true"
-    healthcheck:
-      test: "wget --quiet --tries=1 --spider http://localhost:8000 || exit 1"
-
-  kafka-manager:
-    container_name: kafka-manager
-    image: hlebalbau/kafka-manager:3.0.0.5
-    restart: unless-stopped
-    networks:
-      kafka-net:
-        ipv4_address: 10.5.0.5
-    depends_on:
-      - zookeeper
-    ports:
-      - "9000:9000"
-    environment:
-      ZK_HOSTS: zookeeper:2181
-      APPLICATION_SECRET: "random-secret"
-    command: -Dpidfile.path=/dev/null
-    healthcheck:
-      test: "curl -f http://localhost:9000 || exit 1"
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'kafka:29092'
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      PORT: 9021
 
   websocket_producer:
     image: "namson0482/kafka-websocket-producer:1.0"
@@ -156,9 +124,9 @@ services:
       DATA_FILE: "/temp/"
       INTERVAL_TIME: "300000"
       SCHEMA_REGISTRY_HOST: "schema-registry"
-    #      WAIT_HOSTS: kafka:29092, schema-registry:8081
-    #      WAIT_BEFORE: 10
-    #      WAIT_LOGGER_LEVEL: info
+#      WAIT_HOSTS: kafka:29092, schema-registry:8081
+#      WAIT_BEFORE: 10
+#      WAIT_LOGGER_LEVEL: info
     depends_on:
       - "kafka"
       - "schema-registry"
@@ -169,15 +137,15 @@ services:
     hostname: websocket_consumer
     ports:
       - "6363:6363" #<Computer_port>:<Container_port>
-    #    command: scripts/wait-for-it.sh -t 120 kafka:29092
-    #   Uncomment code below if you want to mount local directory to container directory
+#    command: scripts/wait-for-it.sh -t 120 kafka:29092
+#   Uncomment code below if you want to mount local directory to container directory
     volumes:
       - type: bind
         source: /Users/macbook/Documents/Docs/Tasks/stored # Folder archive the raw files
         target: /temp/
     networks:
       kafka-net:
-        ipv4_address: 10.5.0.3
+        ipv4_address: 10.5.0.5
     restart: on-failure
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
@@ -199,7 +167,7 @@ services:
     restart: on-failure
     networks:
       kafka-net:
-        ipv4_address: 10.5.0.2
+        ipv4_address: 10.5.0.6
     depends_on:
       - "websocket_producer"
       - "websocket_consumer"
